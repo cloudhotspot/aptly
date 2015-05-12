@@ -86,11 +86,11 @@ Step 2.  Note the ID of the key that was created.  In the example output above, 
 Step 3.  Export the GPG keys to environments variables as follows:
 
 ``` console
-	gpg --output gpgkey_pub.gpg --armor --export 06956C56
-	gpg --output gpgkey_sec.gpg --armor --export-secret-key 06956C56
+	$ gpg --output gpgkey_pub.gpg --armor --export 06956C56
+	$ gpg --output gpgkey_sec.gpg --armor --export-secret-key 06956C56
 	
-	export GPG_PUBLIC_KEY=`cat gpgkey_pub.gpg`
-	export GPG_PRIVATE_KEY=`cat gpgkey_sec.gpg`
+	$ export GPG_PUBLIC_KEY=`cat gpgkey_pub.gpg`
+	$ export GPG_PRIVATE_KEY=`cat gpgkey_sec.gpg`
 ```
 
 Step 4.  Publish the GPG key:
