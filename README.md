@@ -4,9 +4,57 @@ A Docker image for creating and publishing an Ubuntu repository using <a href="h
 
 ## Instructions
 
+### Quick Start
+
+On container start, this image will:
+
+* Create a repository defined by the environment variable `REPO_NAME` (set to "my-repository" by default).
+* Install any packages found in `/etc/aptly/packages`.  This is exposed as a volume so you can mount this volume externally.
+* Serve the repository on container port 8888.
+
+For example, to create a repo called "yellow-repo", install any packages in `/hostpath/to/packages` on the Docker host and serve the repo externally on port 80:
+  
+```console
+docker run -d --name aptly -e REPO_NAME=yellow-repo -p 80:8888 -v /hostpath/to/packages:/aptly/packages cloudhotspot/aptly
+```
+
+### Custom Configuration
+
+By default, the image uses the following aptly configuration file.  This file is located in `/etc/aptly/aptly.conf`:
+
+```
+{
+  "rootDir": "/aptly",
+  "downloadConcurrency": 4,
+  "downloadSpeedLimit": 0,
+  "architectures": ["i386", "amd64"],
+  "dependencyFollowSuggests": false,
+  "dependencyFollowRecommends": false,
+  "dependencyFollowAllVariants": false,
+  "dependencyFollowSource": false,
+  "gpgDisableSign": false,
+  "gpgDisableVerify": false,
+  "downloadSourcePackages": false,
+  "ppaDistributorID": "ubuntu",
+  "ppaCodename": "",
+  "S3PublishEndpoints": {
+  },
+  "SwiftPublishEndpoints":{	
+  }
+}
+```
+
+`etc/aptly` is exposed as a volume so you can mount your own configuration file as follows:
+
+```
+docker run -d --name aptly -e REPO_NAME=yellow-repo -p 80:8888 -v /hostpath/to/conf/:/etc/aptly cloudhotspot/aptly
+```
+
+Note that the location of the `rootDir` setting must reflect the value of the `REPO_PATH` environment variable (set to `/aptly/base` by default). 
+
 ### GPG Keys
 
-The image has a couple of baked in GPG keys which you should replace.
+The image has a couple of baked-in GPG keys which you should replace if using this for anything other than prototyping.
 
 You can replace thes GPG keys as follows:
 
@@ -15,7 +63,9 @@ Step 1.  Generate your GPG keys
 ```console
 	# OS X Example
 	
-	$ brew uninstall Caskroom/cask/gpgtools
+	$ brew install Caskroom/cask/gpgtools
+	...
+	...
 	$ gpg --gen-key
 	gpg (GnuPG/MacGPG2) 2.0.27; Copyright (C) 2015 Free Software Foundation, Inc.
 	This is free software: you are free to change and redistribute it.
