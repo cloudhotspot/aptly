@@ -12,7 +12,7 @@ You can replace thes GPG keys as follows:
 
 Step 1.  Generate your GPG keys
 
-```shell
+```console
 	# OS X Example
 	
 	$ brew uninstall Caskroom/cask/gpgtools
@@ -77,7 +77,7 @@ Step 1.  Generate your GPG keys
 
 Step 2.  Note the ID of the key that was created.  In the example output above, the ID is listed on the line:
 
-``` shell
+``` console
 	...
 	gpg: key 06956C56 marked as ultimately trusted
 	...
@@ -85,10 +85,17 @@ Step 2.  Note the ID of the key that was created.  In the example output above, 
 
 Step 3.  Export the GPG keys to environments variables as follows:
 
-``` shell
+``` console
 	gpg --output gpgkey_pub.gpg --armor --export 06956C56
 	gpg --output gpgkey_sec.gpg --armor --export-secret-key 06956C56
 	
 	export GPG_PUBLIC_KEY=`cat gpgkey_pub.gpg`
 	export GPG_PRIVATE_KEY=`cat gpgkey_sec.gpg`
+```
+
+Step 4.  Publish the GPG key:
+
+``` console
+	$ gpg --send-key 06956C56
+	gpg: sending key 06956C56 to hkps server hkps.pool.sks-keyservers.net
 ```
