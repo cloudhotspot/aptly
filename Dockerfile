@@ -1,5 +1,5 @@
 FROM        ubuntu:14.04.2
-MAINTAINER  Justin Menga "justin.menga@yellow.co.nz"
+MAINTAINER  Justin Menga "justin.menga@cloudhotspot.co"
 ENV REPO_NAME=my-repository
 
 # Instructions from: http://www.aptly.info/download/
@@ -8,7 +8,6 @@ apt-key adv --keyserver keys.gnupg.net --recv-keys 2A194991; \
 apt-get update; \
 apt-get install aptly -y
 
-# Exposing salt master and api ports
 EXPOSE 80
 
 # Add and set start script
