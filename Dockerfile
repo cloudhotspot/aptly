@@ -17,6 +17,6 @@ ADD start.sh start.sh
 ADD aptly.conf $REPO_CONF
 
 # Expose volumes
-VOLUME ["/etc/aptly/packages", "/etc/aptly/conf" "/etc/aptly/keys"]
+VOLUME ["/etc/aptly/packages", "/etc/aptly/conf", "/etc/aptly/keys"]
 	
 CMD ["bash", "start.sh"]

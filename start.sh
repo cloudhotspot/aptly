@@ -2,15 +2,12 @@
 # Check if the repository already exists
 PACKAGES=/etc/aptly/packages/*
 
-
 # Import GPG Keys
-# Need to execute this command TWICE!
-gpg --list-keys
-gpg --list-keys
 gpg --list-keys | grep -qv '.'
 if [ $? -eq 1 ]; then
     gpg --import /etc/aptly/keys/gpgkey_pub.gpg
     gpg --allow-secret-key-import --import /etc/aptly/keys/gpgkey_sec.gpg
+    rm /etc/aptly/keys/*.gpg
 fi
 
 aptly repo list -config=$REPO_CONF -raw=true | grep -xq $REPO_NAME

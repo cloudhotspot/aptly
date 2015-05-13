@@ -2,9 +2,8 @@
 
 A Docker image for creating and publishing an Ubuntu repository using <a href="http://aptly.info" target="_blank">aptly</a>.
 
-## Instructions
 
-### Quick Start
+## Quick Start
 
 On container start, this image will:
 
@@ -18,7 +17,53 @@ For example, to create a repo called "yellow-repo", install any packages in `/ho
 docker run -d --name aptly -e REPO_NAME=yellow-repo -p 80:8888 -v /hostpath/to/packages:/aptly/packages cloudhotspot/aptly
 ```
 
-### Custom Configuration
+## Testing
+
+On a remote Ubuntu host import the GPG key for your repository.  You can use the baked in GPG key which has a key ID of 06956C56, or you can follow the steps in the GPG Keys section to use your own GPG key.
+
+```console
+$ gpg --keyserver keys.gnupg.net --recv-keys 06956C56
+gpg: requesting key 06956C56 from hkp server keys.gnupg.net
+gpg: /root/.gnupg/trustdb.gpg: trustdb created
+gpg: key 06956C56: public key "Example Key (Simple solution) <key@example.com>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1  (RSA: 1)
+$ gpg -a --export 06956C56 | sudo apt-key add -
+OK
+```
+
+Next add your new repository to `/etc/apt/sources.list`
+
+```console
+$ echo "deb http://your.docker.host/ trusty main" >> /etc/apt/sources.list
+$ apt-get update
+Get:1 http://your.docker.host trusty InRelease [2741 B]
+Ign http://archive.ubuntu.com trusty InRelease
+...
+Reading package lists... Done
+```
+
+Finally test installing a package.  This repository includes a test package `rubygem-hello-world` in `/packages` that you can test installing (this requires you to mount `/packages` as a volume when you run the aptly container).
+
+```console
+$ apt-get install rubygem-hello-world
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following NEW packages will be installed:
+  rubygem-hello-world
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 8606 B of archives.
+After this operation, 12.3 kB of additional disk space will be used.
+Get:1 http://your.docker.host/ trusty/main rubygem-hello-world all 1.2.0 [8606 B]
+Fetched 8606 B in 0s (58.8 kB/s)
+Selecting previously unselected package rubygem-hello-world.
+(Reading database ... 11528 files and directories currently installed.)
+Preparing to unpack .../rubygem-hello-world_1.2.0_all.deb ...
+Unpacking rubygem-hello-world (1.2.0) ...
+Setting up rubygem-hello-world (1.2.0) ...
+```
+## Custom Configuration
 
 By default, the image uses the following aptly configuration file.  This file is located in `/etc/aptly/aptly.conf`:
 
@@ -52,11 +97,15 @@ docker run -d --name aptly -e REPO_NAME=yellow-repo -p 80:8888 -v /hostpath/to/c
 
 Note that the location of the `rootDir` setting must reflect the value of the `REPO_PATH` environment variable (set to `/aptly/base` by default). 
 
-### GPG Keys
+## GPG Keys
 
-The image has a couple of baked-in GPG keys which you should replace if using this for anything other than prototyping.
+Docker containers have very low system entropy which means generating keys can take hours.  Hence keys need to be generated externally.
 
-You can replace thes GPG keys as follows:
+The image has a couple of baked-in GPG keys which you should replace if using this for anything other than testing/prototyping.
+
+### Generating GPG Keys
+
+The following provides an example of generating GPG keys on an OS X host.
 
 Step 1.  Generate your GPG keys
 
@@ -133,7 +182,7 @@ Step 2.  Note the ID of the key that was created.  In the example output above, 
 	...
 ```
 
-Step 3.  Export the GPG keys to environments variables as follows:
+Step 3.  Export the GPG keys to files:
 
 ``` console
 	$ gpg --output gpgkey_pub.gpg --armor --export 06956C56
@@ -148,4 +197,35 @@ Step 4.  Publish the GPG key:
 ``` console
 	$ gpg --send-key 06956C56
 	gpg: sending key 06956C56 to hkps server hkps.pool.sks-keyservers.net
+	
+```
+
+Now that you have generated a GPG key pair, there are two ways of replacing the keys in the container as described below.
+
+### Re-build the image with your own keys (RECOMMENDED)
+
+Simple replace the public and private key files in the `keys` folder under your Dockerfile root and rebuild the image.
+
+```console
+$ ls -l keys/*
+total 16
+-rw-r--r--  1 bob  staff  1741 13 May 01:30 gpgkey_pub.gpg
+-rw-r--r--  1 bob  staff  3507 13 May 01:30 gpgkey_sec.gpg
+
+$ docker build -t myaccount/aptly .
+Sending build context to Docker daemon 114.2 kB
+...
+...
+```
+
+This method is non-destructive of your key files so you will need to clean up (delete) the GPG key files from your build machine yourself.
+
+### Mount `/etc/aptly/keys` to your Docker host when running the container
+
+This approach allows you to "override" the baked-in `/etc/aptly/keys` folder and mount the `/etc/aptly/keys` from your Docker host.
+
+Note that the `start.sh` script deletes GPG key files after import, so they will be deleted from your Docker host after first container run.
+
+```console
+$ docker run -d --rm --name aptly -p 80:8888 -v /hostpath/to/keys:/etc/aptly/keys cloudhotspot/aptly 
 ```
