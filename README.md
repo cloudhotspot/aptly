@@ -14,7 +14,7 @@ On container start, this image will:
 For example, to create a repo called "yellow-repo", install any packages in `/hostpath/to/packages` on the Docker host and serve the repo externally on port 80:
   
 ```console
-docker run -d --name aptly -e REPO_NAME=yellow-repo -p 80:8888 -v /hostpath/to/packages:/aptly/packages cloudhotspot/aptly
+docker run -d --name aptly -e REPO_NAME=yellow-repo -p 80:8888 -v /hostpath/to/packages:/etc/aptly/packages cloudhotspot/aptly
 ```
 
 ## Testing
