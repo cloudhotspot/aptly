@@ -43,25 +43,25 @@ Ign http://archive.ubuntu.com trusty InRelease
 Reading package lists... Done
 ```
 
-Finally test installing a package.  This repository includes a test package `rubygem-hello-world` in `/packages` that you can test installing (this requires you to mount `/packages` as a volume when you run the aptly container).
+Finally test installing a package.  This repository includes an example package `rubygem-hello-world` in `/packages` that you can test installing (this requires you to mount `/packages` as a volume when you run the aptly container).
 
 ```console
 $ apt-get install rubygem-hello-world
 Reading package lists... Done
 Building dependency tree
 Reading state information... Done
+The following extra packages will be installed:
+  ca-certificates libruby1.9.1 libyaml-0-2 openssl ruby ruby1.9.1
+Suggested packages:
+  ri ruby-dev ruby1.9.1-examples ri1.9.1 graphviz ruby1.9.1-dev ruby-switch
 The following NEW packages will be installed:
+  ca-certificates libruby1.9.1 libyaml-0-2 openssl ruby ruby1.9.1
   rubygem-hello-world
-0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
-Need to get 8606 B of archives.
-After this operation, 12.3 kB of additional disk space will be used.
-Get:1 http://your.docker.host/ trusty/main rubygem-hello-world all 1.2.0 [8606 B]
-Fetched 8606 B in 0s (58.8 kB/s)
-Selecting previously unselected package rubygem-hello-world.
-(Reading database ... 11528 files and directories currently installed.)
-Preparing to unpack .../rubygem-hello-world_1.2.0_all.deb ...
-Unpacking rubygem-hello-world (1.2.0) ...
-Setting up rubygem-hello-world (1.2.0) ...
+...
+...
+Running hooks in /etc/ca-certificates/update.d....done.
+$ hello-world
+this is executable hello-world
 ```
 ## Custom Configuration
 
