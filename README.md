@@ -19,7 +19,7 @@ docker run -d --name aptly -e REPO_NAME=yellow-repo -p 80:8888 -v /hostpath/to/p
 
 ## Testing
 
-On a remote Ubuntu host import the GPG key for your repository.  You can use the baked in GPG key which has a key ID of 06956C56, or you can follow the steps in the GPG Keys section to use your own GPG key.
+On a remote Ubuntu host import the GPG key for your repository.  You can use the baked in GPG key which has a key ID of 06956C56, or you can follow the steps in the [GPG Keys](##GPG Keys) section to use your own GPG key.
 
 ```console
 $ gpg --keyserver keys.gnupg.net --recv-keys 06956C56
