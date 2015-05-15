@@ -12,7 +12,7 @@ fi
 
 aptly repo list -config=$REPO_CONF -raw=true | grep -xq $REPO_NAME
 if [ $? -eq 1 ]; then
-    aptly repo create -distribution=trusty -component=main -config=$REPO_CONF  $REPO_NAME
+    aptly repo create -distribution=trusty -component=main -config=$REPO_CONF $REPO_NAME
     for p in $PACKAGES
     do
         aptly repo add -config=$REPO_CONF $REPO_NAME $p
